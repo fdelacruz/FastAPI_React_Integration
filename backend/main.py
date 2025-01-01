@@ -15,7 +15,7 @@ class Fruits(BaseModel):
 
 app = FastAPI()
 
-origins = ["http://192.168.1.6:5173", "http://localhost:5173"]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -40,4 +40,4 @@ def add_fruit(fruit: Fruit):
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)
