@@ -5,6 +5,11 @@ import api from '../api';
 const FruitList = () => {
   const [fruits, setFruits] = useState([]);
 
+  // api.interceptors.request.use((config) => {
+  //   console.log('Making request to:', config.url);
+  //   return config;
+  // });
+
   const fetchFruits = async () => {
     try {
       const response = await api.get('/fruits');
