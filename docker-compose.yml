@@ -11,7 +11,8 @@ services:
       - frontend
       - backend
   frontend:
-    image: "node:23-alpine3.20"
+    image: todo-app/frontend
+    build: ./frontend
     user: "root"
     working_dir: /usr/src/app
     environment:
