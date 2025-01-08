@@ -1,5 +1,16 @@
-name: todo-app
+name: farm-app
 services:
+  mongodb:
+    image: arm64v8/mongo:4.4.18
+    container_name: mongodb
+    restart: always
+    ports:
+      - '27017:27017'
+    environment:
+    - MONGO_INITDB_ROOT_USERNAME=root
+    - MONGO_INITDB_ROOT_PASSWORD=rootroot
+    volumes:
+      - ./db:/data/db
   nginx:
     image: nginx:latest
     volumes:
@@ -11,7 +22,7 @@ services:
       - frontend
       - backend
   frontend:
-    image: todo-app/frontend
+    image: farm/frontend
     build: ./frontend
     user: "root"
     working_dir: /usr/src/app
@@ -26,7 +37,7 @@ services:
       - "3000:3000"
     command: "npm run dev"
   backend:
-    image: todo-app/backend
+    image: farm/backend
     build: ./backend
     volumes:
       - ./backend/:/usr/src/app

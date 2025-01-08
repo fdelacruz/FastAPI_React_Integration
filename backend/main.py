@@ -1,19 +1,30 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
-from typing import List
 
 
 class Fruit(BaseModel):
     name: str
 
 
-class Fruits(BaseModel):
-    fruits: List[Fruit]
+# Helper function to format fruit data
+def fruit_helper(fruit) -> dict:
+    return {
+        "id": str(fruit["_id"]),
+        "name": fruit["name"],
+    }
 
 
 app = FastAPI()
+
+# MongoDB connection details
+MONGO_DETAILS = "mongodb://root:rootroot@mongodb:27017/fruits_db?authSource=admin"
+client = AsyncIOMotorClient(MONGO_DETAILS)
+database = client.get_default_database()  # Database name
+fruit_collection = database.get_collection("fruits")  # Collection name
+
 
 origins = ["*"]
 
@@ -25,18 +36,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-memory_db = {"fruits": []}
 
-
-@app.get("/fruits", response_model=Fruits)
-def get_fruits():
-    return Fruits(fruits=memory_db["fruits"])
+@app.get("/fruits")
+async def get_fruits():
+    fruits = []
+    async for fruit in fruit_collection.find():
+        fruits.append(fruit_helper(fruit))
+    return fruits
 
 
 @app.post("/fruits")
-def add_fruit(fruit: Fruit):
-    memory_db["fruits"].append(fruit)
-    return fruit
+async def add_fruit(fruit: Fruit):
+    existing_fruit = await fruit_collection.find_one({"name": fruit.name})
+    if existing_fruit:
+        raise HTTPException(status_code=400, detail="Fruit already exists")
+
+    fruit_data = {"name": fruit.name}
+    new_fruit = await fruit_collection.insert_one(fruit_data)
+    created_fruit = await fruit_collection.find_one({"_id": new_fruit.inserted_id})
+    return fruit_helper(created_fruit)
 
 
 if __name__ == "__main__":

@@ -141,3 +141,5 @@ tags
 
 # javascript
 node_modules/
+
+db/
