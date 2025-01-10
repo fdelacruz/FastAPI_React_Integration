@@ -13,9 +13,7 @@ const FruitList = () => {
   const fetchFruits = async () => {
     try {
       const response = await api.get('/fruits');
-      console.log('API Response:', response.data)
       setFruits(response.data || []);
-      console.log('Fruits state updated:', response.data)
     } catch (error) {
       console.error("Error fetching fruits", error);
     }
@@ -33,10 +31,6 @@ const FruitList = () => {
   useEffect(() => {
     fetchFruits(); // Fetch fruits from the backend
   }, []);
-
-  useEffect(() => {
-    console.log('Fruits state updated:', fruits); // Log state updates for debugging
-  }, [fruits]);
 
   return (
     <div>
