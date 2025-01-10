@@ -35,15 +35,12 @@ const FruitList = () => {
   return (
     <div>
       <h2>Fruits List</h2>
-      <p>Fruits count: {fruits.length}</p>
       <ul>
-        {fruits && fruits.length > 0 ? (
+        {
           fruits.map((fruit, index) => (
-            <li key={fruit.id || index}>{fruit.name}</li>
+            <li key={index}>{fruit.name}</li>
           ))
-        ) : (
-          <p>No fruits available</p>
-        )}
+        }
       </ul>
       <AddFruitForm addFruit={addFruit} />
     </div>
