@@ -2,11 +2,8 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
-from pydantic import BaseModel
 
-
-class Fruit(BaseModel):
-    name: str
+from models.fruit import Fruit
 
 
 # Helper function to format fruit data
