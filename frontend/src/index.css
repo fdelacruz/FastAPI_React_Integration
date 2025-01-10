@@ -67,6 +67,67 @@ button:focus-visible {
   }
 }
 
-li {
-  list-style: none;
+/* FruitsList.css */
+
+.fruit-list-container {
+  margin: 20px auto;
+  max-width: 600px;
+  text-align: center;
 }
+
+.fruit-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.fruit-item {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  margin: 10px 0;
+  padding: 10px 20px;
+  font-size: 18px;
+  color: #333;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.fruit-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.fruit-header {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #007bff;
+}
+
+.add-fruit-form {
+  margin-top: 40px;
+}
+
+input[type="text"] {
+  padding: 8px;
+  font-size: 16px;
+  margin-right: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+button {
+  padding: 8px 16px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+

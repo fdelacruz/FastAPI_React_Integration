@@ -33,16 +33,16 @@ const FruitList = () => {
   }, []);
 
   return (
-    <div>
-      <h2>Fruits List</h2>
-      <ul>
+    <div className='fruit-list-container'>
+      <h2 className='fruit-header'>Fruits List</h2>
+      <ul className='fruit-list'>
         {
           fruits.map((fruit, index) => (
             <li key={index}>{fruit.name}</li>
           ))
         }
       </ul>
-      <AddFruitForm addFruit={addFruit} />
+      <div className='add-fruit-form'><AddFruitForm addFruit={addFruit} /></div>
     </div>
   );
 };
