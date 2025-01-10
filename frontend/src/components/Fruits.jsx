@@ -13,7 +13,9 @@ const FruitList = () => {
   const fetchFruits = async () => {
     try {
       const response = await api.get('/fruits');
-      setFruits(response.data.fruits);
+      console.log('API Response:', response.data)
+      setFruits(response.data || []);
+      console.log('Fruits state updated:', response.data)
     } catch (error) {
       console.error("Error fetching fruits", error);
     }
@@ -29,16 +31,25 @@ const FruitList = () => {
   };
 
   useEffect(() => {
-    fetchFruits();
+    fetchFruits(); // Fetch fruits from the backend
   }, []);
+
+  useEffect(() => {
+    console.log('Fruits state updated:', fruits); // Log state updates for debugging
+  }, [fruits]);
 
   return (
     <div>
       <h2>Fruits List</h2>
+      <p>Fruits count: {fruits.length}</p>
       <ul>
-        {fruits.map((fruit, index) => (
-          <li key={index}>{fruit.name}</li>
-        ))}
+        {fruits && fruits.length > 0 ? (
+          fruits.map((fruit, index) => (
+            <li key={fruit.id || index}>{fruit.name}</li>
+          ))
+        ) : (
+          <p>No fruits available</p>
+        )}
       </ul>
       <AddFruitForm addFruit={addFruit} />
     </div>

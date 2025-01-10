@@ -41,7 +41,9 @@ app.add_middleware(
 async def get_fruits():
     fruits = []
     async for fruit in fruit_collection.find():
+        print("Fruit from DB:", fruit)  # Log each fruit document
         fruits.append(fruit_helper(fruit))
+    print("Fruits list:", fruits)  # Log the final fruits list
     return fruits
 
 
