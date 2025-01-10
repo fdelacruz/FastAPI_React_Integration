@@ -81,20 +81,16 @@ button:focus-visible {
   margin: 0;
 }
 
-.fruit-item {
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  margin: 10px 0;
-  padding: 10px 20px;
-  font-size: 18px;
-  color: #333;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
 
-.fruit-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.fruit-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin: 5px 0;
+  background-color: #f9f9f9;
 }
 
 .fruit-header {
@@ -131,3 +127,15 @@ button:hover {
   background-color: #0056b3;
 }
 
+.plain-delete-button {
+   all: unset; /* Resets all inherited styles */
+   cursor: pointer; /* Adds a pointer cursor for usability */
+   margin-left: 10px;
+}
+
+.plain-delete-button:hover,
+.plain-delete-button:focus {
+    color: inherit; /* Ensures no color change on hover or focus */
+    background-color: unset;
+    outline: none; /* Removes the focus outline */
+}
