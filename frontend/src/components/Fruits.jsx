@@ -30,7 +30,7 @@ const FruitList = () => {
 
   const deleteFruit = async (id) => {
     try {
-      await api.delete((`/fruits/${id}`));
+      await api.delete(`/fruits/${id}`);
       fetchFruits();
     } catch (error) {
       console.error("Error deleting fruit:", error);

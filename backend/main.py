@@ -1,10 +1,12 @@
+from typing import List
+
 import uvicorn
-from bson import ObjectId
+from beanie import PydanticObjectId, init_beanie
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from models.fruit import Fruit
+from models.fruit import Fruit, FruitInResponse
 
 
 # Helper function to format fruit data
@@ -20,8 +22,7 @@ app = FastAPI()
 # MongoDB connection details
 MONGO_DETAILS = "mongodb://root:rootroot@mongodb:27017/fruits_db?authSource=admin"
 client = AsyncIOMotorClient(MONGO_DETAILS)
-database = client.get_default_database()  # Database name
-fruit_collection = database.get_collection("fruits")  # Collection name
+db = client.get_default_database()  # Database name
 
 
 origins = ["*"]
@@ -35,32 +36,53 @@ app.add_middleware(
 )
 
 
-@app.get("/fruits")
+@app.get("/fruits", response_model=List[FruitInResponse])
 async def get_fruits():
-    fruits = []
-    async for fruit in fruit_collection.find():
-        fruits.append(fruit_helper(fruit))
-    return fruits
+    fruits = await Fruit.find_all().to_list()
+    # Map _id to id for the frontend
+    return [{"id": str(fruit.id), "name": fruit.name} for fruit in fruits]
 
 
 @app.post("/fruits")
 async def add_fruit(fruit: Fruit):
-    existing_fruit = await fruit_collection.find_one({"name": fruit.name})
+    existing_fruit = await Fruit.find_one(Fruit.name == fruit.name)
     if existing_fruit:
         raise HTTPException(status_code=400, detail="Fruit already exists")
 
-    fruit_data = {"name": fruit.name}
-    new_fruit = await fruit_collection.insert_one(fruit_data)
-    created_fruit = await fruit_collection.find_one({"_id": new_fruit.inserted_id})
-    return fruit_helper(created_fruit)
+    # Save the new fruit using Beanie's `create` method
+    # try:
+    #     new_fruit = await fruit.create()
+    #     return fruit_helper(new_fruit)
+    # except Exception as e:
+    #     raise HTTPException(status_code=500, detail=f"Error adding fruit: {str(e)}")
+    # Insert the fruit into the database
+    new_fruit = await fruit.create()
+
+    # Format and return the response
+    return {
+        "id": str(new_fruit.id),  # Convert ObjectId to string
+        "name": new_fruit.name,
+    }
 
 
 @app.delete("/fruits/{id}")
 async def delete_fruit(id: str):
-    result = await fruit_collection.delete_one({"_id": ObjectId(id)})
-    if result.deleted_count == 1:
-        return {"message": "Fruit deleted successfully"}
-    raise HTTPException(status_code=404, detail="Fruit not found")
+    try:
+        # Convert the string ID to PydanticObjectId
+        fruit_id = PydanticObjectId(id)
+        result = await Fruit.find_one(Fruit.id == fruit_id).delete()
+        if result:
+            return {"message": "Fruit deleted successfully"}
+        raise HTTPException(status_code=404, detail="Fruit not found")
+    except Exception as e:
+        print("Error deleting fruit:", e)  # Log the error for debugging
+        raise HTTPException(status_code=400, detail="Invalid ID format")
+
+
+@app.on_event("startup")
+async def app_init():
+    # Initialize Beanie with the MongoDB connection and models
+    await init_beanie(database=db, document_models=[Fruit])
 
 
 if __name__ == "__main__":
