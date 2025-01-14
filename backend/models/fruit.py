@@ -17,4 +17,4 @@ class FruitInResponse(BaseModel):
     name: str
 
     class Config:
-        orm_mode = True  # Ensure it works with Beanie ORM
+        from_attributes = True  # Ensure it works with Beanie ORM
