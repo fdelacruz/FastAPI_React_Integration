@@ -1,10 +1,10 @@
 from typing import List
 
+from connection import Settings
 import uvicorn
-from beanie import PydanticObjectId, init_beanie
+from beanie import PydanticObjectId
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
 
 from models.fruit import Fruit, FruitInResponse
 
@@ -18,12 +18,7 @@ def fruit_helper(fruit) -> dict:
 
 
 app = FastAPI()
-
-# MongoDB connection details
-MONGO_DETAILS = "mongodb://root:rootroot@mongodb:27017/fruits_db?authSource=admin"
-client = AsyncIOMotorClient(MONGO_DETAILS)
-db = client.get_default_database()  # Database name
-
+settings = Settings()
 
 origins = ["*"]
 
@@ -67,8 +62,7 @@ async def delete_fruit(id: str):
 
 @app.on_event("startup")
 async def app_init():
-    # Initialize Beanie with the MongoDB connection and models
-    await init_beanie(database=db, document_models=[Fruit])
+    await settings.initialize_database()
 
 
 if __name__ == "__main__":
