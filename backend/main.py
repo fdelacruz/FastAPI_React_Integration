@@ -1,11 +1,12 @@
+from contextlib import asynccontextmanager
 from typing import List
 
-from connection import Settings
 import uvicorn
 from beanie import PydanticObjectId
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from connection import Settings
 from models.fruit import Fruit, FruitInResponse
 
 
@@ -17,8 +18,18 @@ def fruit_helper(fruit) -> dict:
     }
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        await settings.initialize_database()
+        yield
+    except Exception as e:
+        print(f"Error during app initialization: {e}")
+        yield  # Pass control even if there's an error
+
+
 settings = Settings()
+app = FastAPI(lifespan=lifespan)
 
 origins = ["*"]
 
@@ -58,11 +69,6 @@ async def delete_fruit(id: str):
     if delete_fruit:
         return {"message": "Fruit deleted successfully!"}
     raise HTTPException(status_code=404, detail="Fruit not found")
-
-
-@app.on_event("startup")
-async def app_init():
-    await settings.initialize_database()
 
 
 if __name__ == "__main__":
