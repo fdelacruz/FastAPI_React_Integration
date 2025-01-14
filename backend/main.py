@@ -46,17 +46,10 @@ async def get_fruits():
 @app.post("/fruits")
 async def add_fruit(fruit: Fruit):
     existing_fruit = await Fruit.find_one(Fruit.name == fruit.name)
-    if existing_fruit:
-        raise HTTPException(status_code=400, detail="Fruit already exists")
-
-    # Save the new fruit using Beanie's `create` method
-    # try:
-    #     new_fruit = await fruit.create()
-    #     return fruit_helper(new_fruit)
-    # except Exception as e:
-    #     raise HTTPException(status_code=500, detail=f"Error adding fruit: {str(e)}")
-    # Insert the fruit into the database
-    new_fruit = await fruit.create()
+    if not existing_fruit:
+        new_fruit = await fruit.create()
+        return {"message": "Fruit added successfully!"}
+    raise HTTPException(status_code=400, detail="Fruit already exists")
 
     # Format and return the response
     return {
@@ -67,16 +60,12 @@ async def add_fruit(fruit: Fruit):
 
 @app.delete("/fruits/{id}")
 async def delete_fruit(id: str):
-    try:
-        # Convert the string ID to PydanticObjectId
-        fruit_id = PydanticObjectId(id)
-        result = await Fruit.find_one(Fruit.id == fruit_id).delete()
-        if result:
-            return {"message": "Fruit deleted successfully"}
-        raise HTTPException(status_code=404, detail="Fruit not found")
-    except Exception as e:
-        print("Error deleting fruit:", e)  # Log the error for debugging
-        raise HTTPException(status_code=400, detail="Invalid ID format")
+    # Convert the string ID to PydanticObjectId
+    fruit_id = PydanticObjectId(id)
+    delete_fruit = await Fruit.find_one(Fruit.id == fruit_id).delete()
+    if delete_fruit:
+        return {"message": "Fruit deleted successfully!"}
+    raise HTTPException(status_code=404, detail="Fruit not found")
 
 
 @app.on_event("startup")
