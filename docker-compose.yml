@@ -23,7 +23,9 @@ services:
       - backend
   frontend:
     image: farm/frontend
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     user: "root"
     working_dir: /usr/src/app
     environment:
@@ -37,8 +39,10 @@ services:
       - "3000:3000"
     command: "npm run dev"
   backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     image: farm/backend
-    build: ./backend
     volumes:
       - ./backend/:/usr/src/app
     expose:
