@@ -40,7 +40,7 @@ app.add_middleware(
 async def get_fruits():
     fruits = await Fruit.find_all().to_list()
     # Map _id to id for the frontend
-    return [{"id": str(fruit.id), "name": fruit.name} for fruit in fruits]
+    return [fruit_helper(fruit.dict(by_alias=True)) for fruit in fruits]
 
 
 @app.post("/fruits")
@@ -52,10 +52,7 @@ async def add_fruit(fruit: Fruit):
     raise HTTPException(status_code=400, detail="Fruit already exists")
 
     # Format and return the response
-    return {
-        "id": str(new_fruit.id),  # Convert ObjectId to string
-        "name": new_fruit.name,
-    }
+    return fruit_helper(new_fruit.dict(by_alias=True))
 
 
 @app.delete("/fruits/{id}")
