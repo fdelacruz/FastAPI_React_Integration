@@ -1,4 +1,4 @@
-FROM python:3.13.1-bookworm
+FROM python:3.13.1-alpine3.21
 
 WORKDIR /usr/src/app
 COPY requirements.txt ./
