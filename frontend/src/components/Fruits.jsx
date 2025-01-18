@@ -63,7 +63,7 @@ const FruitList = () => {
               {/* Edit Button */}
               <Button
                 size="sm"
-                colorScheme="blue"
+                colorScheme="green"
                 onClick={() => editFruit(fruit.id)}
               >
                 Edit

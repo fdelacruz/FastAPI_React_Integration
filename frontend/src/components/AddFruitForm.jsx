@@ -27,7 +27,7 @@ const AddFruitForm = ({ addFruit }) => {
           _focus={{ borderColor: "blue.500", boxShadow: "0 0 0 1px blue.500" }}
         />
       </FormControl>
-      <Button type="submit" colorScheme="blue" size="md">
+      <Button type="submit" colorScheme="gray" size="md">
         Add Fruit
       </Button>
     </Box>
