@@ -71,5 +71,21 @@ async def delete_fruit(id: str):
     raise HTTPException(status_code=404, detail="Fruit not found")
 
 
+@app.put("/fruits/{id}")
+async def update_fruit(id: str, fruit: Fruit):
+    fruit_id = PydanticObjectId(id)
+    update_fruit = await Fruit.find_one(Fruit.id == fruit_id)
+    if not update_fruit:
+        raise HTTPException(status_code=404, detail="Fruit not found")
+
+    # Update the fruit's name
+    update_fruit.name = fruit.name
+    await update_fruit.save()  # Persist the changes to the database
+
+    return {
+        "message": "Fruit updated successfully!",
+    }
+
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=3001, reload=True)
