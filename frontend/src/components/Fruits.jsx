@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Box, Button, Heading, List, ListItem, Spacer, Text, Stack } from '@chakra-ui/react';
 import AddFruitForm from './AddFruitForm';
+import UpdateFruitForm from "./UpdateFruitForm"; // Import the new update modal
 import api from '../api';
 
 const FruitList = () => {
   const [fruits, setFruits] = useState([]);
+  const [editingFruit, setEditingFruit] = useState(null); // State to track the fruit being edited
 
+  // Fetch fruits from the backend
   const fetchFruits = async () => {
     try {
       const response = await api.get('/fruits');
@@ -15,6 +18,7 @@ const FruitList = () => {
     }
   };
 
+  // Add a new fruit
   const addFruit = async (fruitName) => {
     try {
       await api.post('/fruits', { name: fruitName });
@@ -24,6 +28,7 @@ const FruitList = () => {
     }
   };
 
+  // Delete a fruit
   const deleteFruit = async (id) => {
     try {
       await api.delete(`/fruits/${id}`);
@@ -33,9 +38,15 @@ const FruitList = () => {
     }
   };
 
-  const editFruit = (id) => {
-    // Placeholder for future edit functionality
-    console.log(`Edit fruit with ID: ${id}`);
+  // Update a fruit
+  const updateFruit = async (id, name) => {
+    try {
+      await api.put(`/fruits/${id}`, { name }); // Send the updated fruit name to the backend
+      fetchFruits(); // Refresh the list after updating
+      setEditingFruit(null); // Close the modal
+    } catch (error) {
+      console.error("Error updating fruit:", error);
+    }
   };
 
   useEffect(() => {
@@ -64,7 +75,7 @@ const FruitList = () => {
               <Button
                 size="sm"
                 colorScheme="green"
-                onClick={() => editFruit(fruit.id)}
+                onClick={() => setEditingFruit(fruit)} // Set the fruit to be edited
               >
                 Edit
               </Button>
@@ -85,6 +96,15 @@ const FruitList = () => {
       <Box mt="6">
         <AddFruitForm addFruit={addFruit} />
       </Box>
+      {/* Update Fruit Modal */}
+      {editingFruit && (
+        <UpdateFruitForm
+          isOpen={!!editingFruit}
+          onClose={() => setEditingFruit(null)}
+          fruit={editingFruit}
+          onUpdate={updateFruit}
+        />
+      )}
     </Box>
   );
 };
