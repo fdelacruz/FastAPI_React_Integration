@@ -1,5 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Box, Button, Heading, List, ListItem, Spacer, Text, Stack } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Heading,
+  List,
+  ListItem,
+  Spacer,
+  Text,
+  Stack,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+} from '@chakra-ui/react';
 import AddFruitForm from './AddFruitForm';
 import UpdateFruitForm from "./UpdateFruitForm"; // Import the new update modal
 import api from '../api';
@@ -7,6 +22,7 @@ import api from '../api';
 const FruitList = () => {
   const [fruits, setFruits] = useState([]);
   const [editingFruit, setEditingFruit] = useState(null); // State to track the fruit being edited
+  const [deletingFruit, setDeletingFruit] = useState(null); // State for delete confirmation dialog
 
   // Fetch fruits from the backend
   const fetchFruits = async () => {
@@ -84,7 +100,7 @@ const FruitList = () => {
               <Button
                 size="sm"
                 colorScheme="red"
-                onClick={() => deleteFruit(fruit.id)}
+                onClick={() => setDeletingFruit(fruit.id)} Open confirmation dialog
               >
                 Delete
               </Button>
@@ -105,9 +121,45 @@ const FruitList = () => {
           onUpdate={updateFruit}
         />
       )}
+
+      {/* Delete Confirmation Dialog */}
+      {deletingFruit && (
+        <AlertDialog
+          isOpen={!!deletingFruit}
+          leastDestructiveRef={undefined}
+          onClose={() => setDeletingFruit(null)}
+        >
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                Delete Fruit
+              </AlertDialogHeader>
+              <AlertDialogBody>
+                Are you sure you want to delete{" "}
+                <Text as="span" fontWeight="bold">
+                  {deletingFruit.name}
+                </Text>
+                ? This action cannot be undone.
+              </AlertDialogBody>
+              <AlertDialogFooter>
+                <Button onClick={() => setDeletingFruit(null)}>Cancel</Button>
+                <Button
+                  colorScheme="red"
+                  onClick={() => {
+                    deleteFruit(deletingFruit.id);
+                    setDeletingFruit(null); // Close dialog after deletion
+                  }}
+                  ml={3}
+                >
+                  Delete
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
+      )}
     </Box>
   );
 };
 
 export default FruitList;
-
